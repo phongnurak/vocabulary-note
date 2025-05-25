@@ -6,6 +6,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { VocabularyCardComponent } from "../vocabulary-card/vocabulary-card.component";
+import { SearchComponent } from "../search/search.component";
 
 @Component({
   selector: 'app-note',
@@ -15,7 +16,8 @@ import { VocabularyCardComponent } from "../vocabulary-card/vocabulary-card.comp
     MatSelectModule,
     FormsModule,
     MatButtonModule,
-    VocabularyCardComponent
+    VocabularyCardComponent,
+    SearchComponent
 ],
   templateUrl: './note.component.html',
   styleUrl: './note.component.scss',
@@ -86,6 +88,20 @@ export class NoteComponent {
       return vocabulary.word.startsWith(text);
     });
 
+  }
+
+  protected removeVocabulary(vocabulary: Vocabulary): void {
+    const removeItemIdex = this.vocabularies.findIndex( item => {
+      return item.word === vocabulary.word;
+    });
+
+    if (removeItemIdex < 0) {
+      return;
+    }
+
+    //Remove item
+    this.vocabularies.splice(removeItemIdex, 1);
+    this.vocabulariesFiltered = [...this.vocabularies];
   }
 
 }

@@ -1,10 +1,10 @@
-<div>
+<div style="flex: 1;">
     <p>Word: <span>{{vocabulary.word}}</span></p>
     <p>Type: <span>{{vocabulary.context.type.displayName}}</span></p>
     <p>Meaning: <span>{{vocabulary.context.meaning}}</span></p>
 </div>
 <div class="action-container">
-    <button mat-icon-button>
-        <mat-icon>more_vert</mat-icon>
+    <button mat-button (click)="onDelete()">
+        <mat-icon>delete</mat-icon>
     </button>
 </div>
