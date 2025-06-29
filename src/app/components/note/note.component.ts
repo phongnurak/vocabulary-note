@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 import { FormsModule, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { Vocabulary, VocabularyType } from '../../models/vocabulary';
 import { MatInputModule } from '@angular/material/input';
@@ -7,6 +7,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { VocabularyCardComponent } from "../vocabulary-card/vocabulary-card.component";
 import { SearchComponent } from "../search/search.component";
+import { ConfigurationService } from '../../services/configuration.service';
+import { Observable, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-note',
@@ -23,6 +25,8 @@ import { SearchComponent } from "../search/search.component";
   styleUrl: './note.component.scss',
 })
 export class NoteComponent {
+
+  private changeEvent: Subscription;
 
   protected defaultVocabulary: Vocabulary = {
     word: '',
@@ -52,18 +56,22 @@ export class NoteComponent {
     }
   ];
 
-  // public constructor() {
-  //   const form = new FormControl();
-  //   form.
-  // }
+  public constructor(private configurationService: ConfigurationService) {
+    const storage = configurationService.getStorage();
+    const vocabs = storage.getAllVocaburary();
+    
+    this.vocabularies.push(...vocabs);
+    this.vocabulariesFiltered.push(...vocabs);
+
+    this.changeEvent = storage.onValueChange().subscribe( updatedVocaburarys => {
+      this.vocabularies = updatedVocaburarys;
+      this.vocabulariesFiltered = updatedVocaburarys;
+    });
+  }
 
   protected addNewVocabulary(vocabulary: Vocabulary): void {
 
-    // this.vocabularies.
-
-    this.vocabularies.push(vocabulary);
-
-    this.vocabulariesFiltered = this.vocabularies;
+    this.configurationService.getStorage().addVocaburary(vocabulary);
 
     this.defaultVocabulary = {
       word: '',
@@ -91,17 +99,7 @@ export class NoteComponent {
   }
 
   protected removeVocabulary(vocabulary: Vocabulary): void {
-    const removeItemIdex = this.vocabularies.findIndex( item => {
-      return item.word === vocabulary.word;
-    });
-
-    if (removeItemIdex < 0) {
-      return;
-    }
-
-    //Remove item
-    this.vocabularies.splice(removeItemIdex, 1);
-    this.vocabulariesFiltered = [...this.vocabularies];
+    this.configurationService.getStorage().deleteVocaburary(vocabulary.word);
   }
 
 }
